@@ -1,0 +1,45 @@
+version: "3.6"
+
+x-restart:
+
+services:
+  api:
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile
+    depends_on:
+      - db
+    environment:
+      DEBUG: "true"
+      DB_PORT: "5432"
+      DB_HOST: "database"
+      DB_NAME: "postgres"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      SECRET_KEY: "rd-dm@)h!i8%k7yb&2tqnb^0w%gwz3%222pp9)+0*+#6wm(@y^"
+    ports:
+      - "0.0.0.0:8500:8000"
+    volumes:
+      - type: bind
+        source: ../src/
+        target: /home/django
+    networks:
+      django-net:
+  db:
+    container_name: postgres
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+    networks:
+      django-net:
+
+networks:
+  django-net:
+
+
+volumes:
+  dbdata:

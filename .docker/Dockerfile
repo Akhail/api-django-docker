@@ -9,15 +9,17 @@ RUN set -xe \
         build-base \
         linux-headers \
         gcc \
-        postgresql-dev
+        postgresql-dev \
+ && apk add --no-cache py3-psycopg2
 
-WORKDIR /home/django
+WORKDIR /home/django/src
 COPY requirements.txt ./
 
 RUN set -xe \
  && pip install -r requirements.txt \
  && rm requirements.txt \
- && apk del .build-deps
+ && apk del .build-deps \
+ && chown -R django .
 
 USER django
 

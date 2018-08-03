@@ -1,10 +1,9 @@
 version: "3.6"
 
-x-restart:
-
 services:
   api:
     container_name: django
+    image: docker_django
     command: python manage.py runserver 0.0.0.0:8000
     build:
       context: ../
@@ -14,7 +13,7 @@ services:
     environment:
       DEBUG: "true"
       DB_PORT: "5432"
-      DB_HOST: "database"
+      DB_HOST: "db"
       DB_NAME: "postgres"
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
@@ -24,9 +23,9 @@ services:
     volumes:
       - type: bind
         source: ../src/
-        target: /home/django
+        target: /home/django/src
     networks:
-      django-net:
+      django_net:
   db:
     container_name: postgres
     image: postgres:alpine
@@ -35,11 +34,10 @@ services:
     volumes:
       - "dbdata:/var/lib/postgresql/data"
     networks:
-      django-net:
+      django_net:
 
 networks:
-  django-net:
-
+  django_net:
 
 volumes:
   dbdata:

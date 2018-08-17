@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.6.4"
+services:
+  - postgresql
+env:
+  DEBUG: "true"
+  DB_PASSWORD: ""
+install:
+  - pip install -r requirements.txt
+before_script: cd src
+script:
+  - python manage.py test --failfast

@@ -3,21 +3,19 @@ version: "3.6"
 services:
   api:
     container_name: django
-    image: docker_django
+    image: akhail/django:2.1
     command: python manage.py runserver 0.0.0.0:8000
+    user: django
+    working_dir: /home/django/src
     build:
       context: ../
+      target: develop
       dockerfile: .docker/Dockerfile
     depends_on:
       - db
     environment:
       DEBUG: "true"
-      DB_PORT: "5432"
       DB_HOST: "db"
-      DB_NAME: "postgres"
-      DB_USER: "postgres"
-      DB_PASSWORD: "postgres"
-      SECRET_KEY: "rd-dm@)h!i8%k7yb&2tqnb^0w%gwz3%222pp9)+0*+#6wm(@y^"
     ports:
       - "0.0.0.0:8500:8000"
     volumes:

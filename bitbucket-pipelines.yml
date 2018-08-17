@@ -1,0 +1,15 @@
+image: akhail/django:2.1
+
+pipelines:
+  default:
+    - step:
+        script:
+          - cd src
+          - python manage.py test --failfast
+        services:
+          - postgres
+
+definitions:
+  services:
+    postgres:
+      image: postgres:alpine

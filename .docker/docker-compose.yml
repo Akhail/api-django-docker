@@ -1,41 +1,40 @@
 version: "3.6"
 
 services:
+  db:
+    container_name: database
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - django_data:/var/lib/postgresql/data
+    networks:
+      database_network:
+
   api:
-    container_name: django
-    image: akhail/django:2.1
+    container_name: application
     command: python manage.py runserver 0.0.0.0:8000
     user: django
     working_dir: /home/django/src
-    build:
-      context: ../
-      target: develop
-      dockerfile: .docker/Dockerfile
     depends_on:
       - db
+    build:
+      context: ../
+      target: application
+      dockerfile: .docker/Dockerfile
     environment:
       DEBUG: "true"
       DB_HOST: "db"
     ports:
       - "0.0.0.0:8500:8000"
     volumes:
-      - type: bind
-        source: ../src/
-        target: /home/django/src
+      - ../src/:/home/django/src
     networks:
-      django_net:
-  db:
-    container_name: postgres
-    image: postgres:alpine
-    ports:
-      - "5432:5432"
-    volumes:
-      - "dbdata:/var/lib/postgresql/data"
-    networks:
-      django_net:
+      database_network:
 
 networks:
-  django_net:
+  database_network:
+    driver: bridge
 
 volumes:
-  dbdata:
+  django_data:

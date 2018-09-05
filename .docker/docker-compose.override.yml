@@ -1,0 +1,52 @@
+version: "3.6"
+
+services:
+  nginx:
+    container_name: server
+    image: akhail/server:1.15
+    command: sh -c "envsubst < /root/nginx.conf > /etc/nginx/conf.d/nginx.conf && exec nginx -g 'daemon off;'"
+    build:
+      context: ../
+      target: server
+      dockerfile: .docker/Dockerfile
+    ports:
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:80:80"
+    env_file:
+      - ../.env
+    environment:
+      DOLLAR: $$
+    volumes:
+      - ../.config/nginx.conf:/root/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - django_static:/srv/django/static
+      - django_socket:/tmp
+    networks:
+      nginx_network:
+
+  api:
+    command: uwsgi --ini /home/django/.uwsgi.ini
+    depends_on:
+      - nginx
+    env_file: ../.env
+    environment:
+      DEBUG:
+    volumes:
+      - ../src/:/home/django/src:ro
+      - ../.config/uwsgi.ini:/home/django/.uwsgi.ini:ro
+      - django_static:/srv/django/static
+      - django_socket:/tmp
+    networks:
+      database_network:
+      nginx_network:
+
+networks:
+  nginx_network:
+    driver: bridge
+  database_network:
+    driver: bridge
+
+volumes:
+  django_data:
+  django_static:
+  django_socket:

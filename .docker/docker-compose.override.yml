@@ -32,7 +32,7 @@ services:
     environment:
       DEBUG:
     volumes:
-      - ../src/:/home/django/src:ro
+      - ../src/:/home/django/src
       - ../.config/uwsgi.ini:/home/django/.uwsgi.ini:ro
       - django_static:/srv/django/static
       - django_socket:/tmp

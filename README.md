@@ -26,12 +26,28 @@
     1. `sudo ufw status; # check port 22, 80, 443 is open`
     1. `sudo ufw enable;`
 1. Create production env `cp example.env .env`
+1. Change .config/uwsgi.ini project var to your project name
 1. Create certificate with letsencrypt
-1. Run containers __dpcup api__ or __dpcup api db__ use postgres in docker
-1. __dpce api manage collectstatic__: Collect statics files
-1. __dpce api manage migrate__: Create migrations on database
-1. __dpce api manage createsuperuser__: Create superuser *is optional*
+1. Config your app in settings ALLOWED_HOSTS and set debug var with `os.getenv('DEBUG', False)`
+1. Set your database settings with 
+1. Run containers __pdcup api__ or __pdcup api db__ use postgres in docker
+1. __pdce api manage collectstatic__: Collect statics files
+1. __pdce api manage migrate__: Create migrations on database
+1. __pdce api manage createsuperuser__: Create superuser *is optional*
 
+### Postgres config
+```python
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgres',
+            'NAME':  os.getenv('DB_NAME',os.path.join(BASE_DIR, 'db.sqlite3')),
+            'USER':  os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASS'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT')
+        }
+    }
+```
 ### Lets encrypt docker
 ```bash
 docker run -it --rm --name certbot \  
@@ -47,8 +63,12 @@ docker run -it --rm --name certbot \
 ### Unable to connect
 * Make sure to execute the command `dcup`
 * Check for any error in the code with `dclf api`
+
 ### Error 400 bad request
-* Set correctly ALLOWED_HOSTS example `ALLOWED_HOSTS=domain;domain2` without "
+* Set correctly ALLOWED_HOSTS example `ALLOWED_HOSTS=['domain','domain2']`
+
+### Internal Server Error
+* View logs with pdcl (production), dcl (develop) and sure not raised exceptions
 
 ## Zsh alias develop
 ```bash
